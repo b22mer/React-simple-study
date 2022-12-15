@@ -27,9 +27,7 @@ const App = () => {
   };
 
   useEffect(() => {
-    setTimeout(() => {
       getData();
-    }, 1500);
   }, []);
 
   const onCreate = useCallback((author, content, emotion) => {
@@ -46,18 +44,19 @@ const App = () => {
     setData((data) => [newItem, ...data]);
   }, []);
 
-  const onRemove = (targetId) => {
-    const newDiaryList = data.filter((it) => it.id !== targetId);
-    setData(newDiaryList);
-  };
+  // onCreate와 같이 최적화 시작
+  const onRemove = useCallback((targetId) => {
+    //setData에 전달되는 파라미터에 최신스테이가 전달되는것이기에!
+    setData(data=> data.filter((it) => it.id !== targetId));
+  },[]);
 
-  const onEdit = (targetId, newContent) => {
-    setData(
+  const onEdit = useCallback((targetId, newContent) => {
+    setData((data)=>
       data.map((it) =>
         it.id === targetId ? { ...it, content: newContent } : it
       )
     );
-  };
+  },[]);
 
   const getDiaryAnalysis = useMemo(() => {
     if (data.length === 0) {

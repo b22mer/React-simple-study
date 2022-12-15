@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import React,{ memo,useEffect, useRef, useState } from "react";
 
 const DiaryItem = ({
   onRemove,
@@ -9,6 +9,11 @@ const DiaryItem = ({
   emotion,
   created_date
 }) => {
+
+useEffect(()=>{
+    console.log(`${id}번째 아이템 렌더!`);
+});
+
   const localContentInput = useRef();
   const [localContent, setLocalContent] = useState(content);
   const [isEdit, setIsEdit] = useState(false);
@@ -73,4 +78,6 @@ const DiaryItem = ({
     </div>
   );
 };
-export default DiaryItem;
+
+//최적화의 시작
+export default memo(DiaryItem);
