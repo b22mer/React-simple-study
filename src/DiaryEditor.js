@@ -89,7 +89,7 @@
 
 import { useRef, useState,useEffect } from "react";
 import React from "react";
-const DiaryEditor = (({ onCreate }) => {
+const DiaryEditor = ({ onCreate }) => {
 
 useEffect(()=>{
 console.log("DiaryEditor 렌더");
@@ -173,5 +173,5 @@ console.log("DiaryEditor 렌더");
       </div>
     </div>
   );
-});
+};
 export default React.memo(DiaryEditor);
