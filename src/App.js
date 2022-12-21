@@ -1,4 +1,5 @@
-import { useEffect,useCallback, useMemo, useRef, useReducer } from "react";
+import React,{ useEffect,useCallback, useMemo, useRef, useReducer, createContext
+} from "react";
 import "./App.css";
 import DiaryEditor from "./DiaryEditor";
 import DiaryList from "./DiaryList";
@@ -31,12 +32,11 @@ const reducer=(state, action)=>{
     default:
       return state;
     
-    
-    
   }
-
 }
 
+export const DiaryStateContext = createContext(null);
+export const DiaryDispatchContext = createContext(null);
 
 
 const App = () => {
@@ -47,14 +47,7 @@ const App = () => {
   //dispatch는 함수형 업데이트 그런것 필요없이 호출을하면 현재 state를 reducer함수가
   //참조를 해서 자동으로 조정해줌, 디펜던시 어레이 걱정을 할필요가 없다.
   const [data, dispatch]=useReducer(reducer, []);
-
-
-
-  
-  
-  
   const dataId = useRef(0);
-
 
   //1.
   const getData = async () => {
@@ -140,16 +133,26 @@ const App = () => {
 
   const { goodCount, badCount, goodRatio } = getDiaryAnalysis;
 
-  return (
-    <div className="App">
 
-      <DiaryEditor onCreate={onCreate} />
-      <div>전체 일기 : {data.length}</div>
-      <div>기분 좋은 일기 개수 : {goodCount}</div>
-      <div>기분 나쁜 일기 개수 : {badCount}</div>
-      <div>기분 좋은 일기 비율 : {goodRatio}</div>
-      <DiaryList onEdit={onEdit} onRemove={onRemove} diaryList={data} />
-    </div>
+
+  const memoizedDispatch = useMemo(() => {
+    return { onCreate, onRemove, onEdit };
+  }, []);
+
+  return (
+    <DiaryStateContext.Provider value={data}>
+      <DiaryDispatchContext.Provider value={memoizedDispatch}>
+        <div className="App">
+          <DiaryEditor />
+          <div>전체 일기 : {data.length}</div>
+          <div>기분 좋은 일기 개수 : {goodCount}</div>
+          <div>기분 나쁜 일기 개수 : {badCount}</div>
+          <div>기분 좋은 일기 비율 : {goodRatio}%</div>
+          <DiaryList />
+        </div>
+      </DiaryDispatchContext.Provider>
+    </DiaryStateContext.Provider>
   );
 };
+
 export default App;

@@ -87,10 +87,10 @@
 
 
 
-import React,{ useRef, useState } from "react";
-
-const DiaryEditor = ({ onCreate }) => {
-
+import React,{ memo, useContext, useRef, useState } from "react";
+import { DiaryDispatchContext } from "./App";
+const DiaryEditor = () => {
+  const { onCreate } = useContext(DiaryDispatchContext);
 
   const authorInput = useRef();
   const contentInput = useRef();
@@ -171,4 +171,4 @@ const DiaryEditor = ({ onCreate }) => {
     </div>
   );
 };
-export default React.memo(DiaryEditor);
+export default memo(DiaryEditor);
