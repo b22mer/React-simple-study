@@ -15,7 +15,7 @@
 // -----------------------------------------------------------------------------------------
 // useState vs useReducer
 
-import React, { useEffect, useState, useReducer, useContext } from 'react';
+import React, { useEffect, useState, useReducer, useContext, useRef } from 'react';
 
 import Card from '../UI/Card/Card';
 import classes from './Login.module.css';
@@ -46,10 +46,10 @@ const passwordReducer= (state, action)=>{
 }
 const Login = (props) => {
 
-  const authCtx=useContext(AuthContext);
+const authCtx=useContext(AuthContext);
+const emailInputRef= useRef();
+const passwordInputRef= useRef();
 
-  // const [enteredPassword, setEnteredPassword] = useState('');
-  // const [passwordIsValid, setPasswordIsValid] = useState();\
 
 const [passwordState, dispatchPassword] = useReducer(passwordReducer, {
   value: '', isValid: undefined,
@@ -90,45 +90,40 @@ useEffect(()=>{
 
   const emailChangeHandler = (event) => {
    dispatchEmail({type: "USER_INPUT", val: event.target.value })
-
-    // setFormIsValid(
-    //   event.target.value.includes('@') && passwordState.isValid
-    // );
   };
-
 
   const passwordChangeHandler = (event) => {
     dispatchPassword({type: "USER_INPUT", val: event.target.value })
-
-    // setFormIsValid(
-    //   event.target.value.trim().length > 6 && emailState.isValid
-    // );
   };
-
 
   const validateEmailHandler = () => {
     dispatchEmail({type: "INPUT_BLUR"}) ; // 꼭 두번째 인자 값을 넣어줄 필요는 없다.
-    //setEmailIsValid(emailState.isValid);
   };
 
   const validatePasswordHandler = () => {
     dispatchPassword({type: "INPUT_BLUR"});
-    //setPasswordIsValid(enteredPassword.trim().length > 6);
   };
 
   const submitHandler = (event) => {
     event.preventDefault();
-    authCtx.onLogin(emailState.value, passwordState.value);
+    if(formIsValid){
+      authCtx.onLogin(emailState.value, passwordState.value);
+    }else if(!emailIsValid){
+      emailInputRef.current.focus();
+      }else if(!passwordIsValid){
+      passwordInputRef.current.focus();
+    }
+   
   };
 
   return (
     <Card className={classes.login}>
       <form onSubmit={submitHandler}>
-        <Input id="email" label="E-Mail" type="email" isValid={emailIsValid} value={emailState.value} onChange={emailChangeHandler} onBlur={validateEmailHandler}/>
-        <Input id="password" label="Password" type="password" isValid={passwordIsValid} value={passwordState.value} onChange={passwordChangeHandler} onBlur={validatePasswordHandler}/>
+        <Input ref={emailInputRef} id="email" label="E-Mail" type="email" isValid={emailIsValid} value={emailState.value} onChange={emailChangeHandler} onBlur={validateEmailHandler}/>
+        <Input  ref={passwordInputRef} id="password" label="Password" type="password" isValid={passwordIsValid} value={passwordState.value} onChange={passwordChangeHandler} onBlur={validatePasswordHandler}/>
   
         <div className={classes.actions}>
-          <Button type="submit" className={classes.btn} disabled={!formIsValid}>
+          <Button type="submit" className={classes.btn} >
             Login
           </Button>
         </div>
