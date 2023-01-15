@@ -10,12 +10,17 @@
 // -로그인후 컴포넌트가 사라지면 실행이된다.
 // -하나의 state를 기반흥로 하는 state로 업데이트하는경우에는 병합하는게 좋을수있다.
 // -Reducer 함수는 컴포넌트 안에 안만들어도된다. 그 이유는 컴포넌트 내부에서 정의된 그어떤것과도 연관 x
+// -useEffect()에 객체 속성을 종속성으로 추가하기 위해 dstructuring을 사용, 매우 일반적인 패턴 및 접근 방식
+// -핵심은 우리가 destructuring을 사용한다는 것이 아니라, 전체 개체 대신 특정 속성을 종속성으로 전달한다는 것
 // -----------------------------------------------------------------------------------------
-import React, { useEffect, useState, useReducer } from 'react';
+// useState vs useReducer
+
+import React, { useEffect, useState, useReducer, useContext } from 'react';
 
 import Card from '../UI/Card/Card';
 import classes from './Login.module.css';
 import Button from '../UI/Button/Button';
+import AuthContext from '../../store/auth-context';
 
 const emailReducer = (state, action)=>{
   if(action.type === "USER_INPUT"){
@@ -40,18 +45,20 @@ const passwordReducer= (state, action)=>{
 }
 const Login = (props) => {
 
+  const authCtx=useContext(AuthContext);
+
   // const [enteredPassword, setEnteredPassword] = useState('');
   // const [passwordIsValid, setPasswordIsValid] = useState();\
 
  const [passwordState, dispatchPassword] = useReducer(passwordReducer, {
   value: '', isValid: undefined,
  })
-  
-  const [formIsValid, setFormIsValid] = useState(false);
+ const [emailState, dispatchEmail] = useReducer(emailReducer, {
+  value: '', isValid: undefined, // 초기에 이렇게 두면 처음부터 블러 처리되는것을 막는다.
+});
 
-  const [emailState, dispatchEmail] = useReducer(emailReducer, {
-    value: '', isValid: undefined, // 초기에 이렇게 두면 처음부터 블러 처리되는것을 막는다.
-  });
+const [formIsValid, setFormIsValid] = useState(false);
+
 
 useEffect(()=>{
   console.log("effect running");
@@ -61,18 +68,23 @@ useEffect(()=>{
   }
 },[])
 
-// useEffect(()=>{
-//   const identifier= setTimeout(()=>{
-//     console.log("유효성 검사");
-//     setFormIsValid(
-//       enteredEmail.includes('@') && enteredPassword.trim().length > 6
-//     );
-//   }, 500)
-//   return ()=>{
-//     console.log("clean up");
-//     clearTimeout(identifier);
-//   }
-// },[enteredEmail,enteredPassword])
+// 이펙트가 불필요하게 실행되는것을 피하기위함
+const {isValid: emailIsValid} = emailState; // 별칭을 할당한것이지 값을 할당한것이 아니다.
+const {isValid: passwordIsValid} = passwordState;
+
+
+useEffect(()=>{
+  const identifier= setTimeout(()=>{
+    console.log("유효성 검사");
+    setFormIsValid(
+      passwordIsValid &&  emailIsValid
+    );
+  }, 500)
+  return ()=>{
+    console.log("clean up");
+    clearTimeout(identifier);
+  }
+},[emailIsValid,passwordIsValid])
 
 
 
@@ -80,9 +92,9 @@ useEffect(()=>{
   const emailChangeHandler = (event) => {
    dispatchEmail({type: "USER_INPUT", val: event.target.value })
 
-    setFormIsValid(
-      event.target.value.includes('@') && passwordState.isValid
-    );
+    // setFormIsValid(
+    //   event.target.value.includes('@') && passwordState.isValid
+    // );
   };
 
 
@@ -91,9 +103,9 @@ useEffect(()=>{
   const passwordChangeHandler = (event) => {
     dispatchPassword({type: "USER_INPUT", val: event.target.value })
 
-    setFormIsValid(
-      event.target.value.trim().length > 6 && emailState.isValid
-    );
+    // setFormIsValid(
+    //   event.target.value.trim().length > 6 && emailState.isValid
+    // );
   };
 
 
@@ -112,7 +124,7 @@ useEffect(()=>{
 
   const submitHandler = (event) => {
     event.preventDefault();
-    props.onLogin(emailState.value, passwordState.value);
+    authCtx.onLogin(emailState.value, passwordState.value);
   };
 
   return (
