@@ -5,6 +5,7 @@ import MealSummary from './MealSummary';
 const Meals = () => {
     return (
         <div>
+      
            <MealSummary/> 
            <AvailableMeals/>
         </div>
