@@ -15,15 +15,23 @@ const Cart = (props) => {
     const totalAmount = `$${cartCtx.totalAmount.toFixed(2)}`
     const hasItems=cartCtx.items.length>0;
 
-    const cartItemRemoveHandler = id =>{}
+    const cartItemRemoveHandler = id =>{
+        cartCtx.removeItem(id);
+    }
+
     const cartItemAddHandler = item =>{
         cartCtx.addItem({...item, amount:1})
     }
     const cartItems=(<ul className={classes['cart-items']}>{
         cartCtx.items.map(item=>
             //bind를 통해 추기 되거나 삭제된 항목의 id가 remove로 전달이 된다.
-           <CartItem key={item.id} name={item.name} price={item.price} amount={item.amount}
-           onRemove={cartItemRemoveHandler.bind(null,item.id)} onAdd={cartItemAddHandler.bind(null,item.id)}/>
+           <CartItem 
+           key={item.id} 
+           name={item.name} 
+           price={item.price}
+           amount={item.amount}
+           onRemove={cartItemRemoveHandler.bind(null,item.id)} 
+           onAdd={cartItemAddHandler.bind(null,item)}/>
             )}
     </ul>);
 
