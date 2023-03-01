@@ -1,0 +1,17 @@
+{
+    "name": "react-typescript",
+    "version": "1.0.0",
+    "description": "",
+    "main": "no-typescript.js",
+    "dependencies": {
+        "tsc-init": "^2.1.0",
+        "typescript": "^4.9.5"
+    },
+    "devDependencies": {},
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC"
+}
