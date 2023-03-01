@@ -1,21 +1,15 @@
-// function Todos(props){
-//     return <ul>
+import React,{useContext}from 'react';
 
-//         <li>리액트 배우기</li>
-//         <li>타입 스크립트 배우기</li>
-//     </ul>
-// }
-import React from 'react';
-import Todo from '../models/todo'
 import TodoItem from './TodoItem';
+import {TodosContext} from "../store/todos-context"
 import styles from './Todos.module.css';
-const Todos: React.FC<{ items: Todo[], deleteTodo: (id:string) => void }> = (props) => {
+const Todos: React.FC = () => {
 
-
+const todosCtx = useContext(TodosContext);
 
   return <ul className={styles.todos}>
-    {props.items.map((it) =>
-      <TodoItem key={it.id} text={it.text} deleteTodo={props.deleteTodo.bind(null, it.id)} />
+    {todosCtx.items.map((it) =>
+      <TodoItem key={it.id} text={it.text} deleteTodo={todosCtx.deleteTodo.bind(null, it.id)} />
     )}
   </ul>
 }
